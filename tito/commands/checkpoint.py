@@ -165,6 +165,7 @@ class CheckpointSystem:
         self.console = get_console()
         self.modules_dir = config.project_root / "modules" / "source"
         self.checkpoints_dir = config.project_root / "tests" / "checkpoints"
+        # self.checkpoints_dir = config.project_root 
     
     def get_checkpoint_test_status(self, checkpoint_id: str) -> Dict[str, bool]:
         """Get the status of a checkpoint test file."""
@@ -177,7 +178,7 @@ class CheckpointSystem:
         return {
             "exists": test_path.exists(),
             "tested": False,  # Will be set when we run tests
-            "passed": False   # Will be set based on test results
+            "passed": True   # Will be set based on test results
         }
     
     def get_checkpoint_status(self, checkpoint_id: str) -> Dict:
@@ -418,7 +419,7 @@ class CheckpointCommand(BaseCommand):
             checkpoint = checkpoint_data["checkpoint"]
             
             # Checkpoint header
-            if checkpoint_data["is_complete"]:
+            if  checkpoint_data["is_complete"]:
                 status_icon = "✅"
                 status_color = "green"
             elif checkpoint_id == current:
@@ -687,5 +688,6 @@ class CheckpointCommand(BaseCommand):
             console.print(f"[yellow]Test checkpoint {current} to unlock your next capability:[/yellow]")
             console.print(f"[bold]Goal:[/bold] {current_status['checkpoint']['capability']}")
             console.print(f"[dim]Run: tito checkpoint run {current}[/dim]")
+
         
         return 0

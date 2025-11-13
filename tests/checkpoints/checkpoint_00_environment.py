@@ -1,8 +1,3 @@
-"""
-Checkpoint 0: Environment Setup (After Module 1 - Setup)
-Question: "Can I configure my TinyTorch development environment?"
-"""
-
 import sys
 import platform
 import pytest
@@ -30,8 +25,8 @@ def test_checkpoint_00_environment():
     # Test 3: TinyTorch availability
     try:
         import tinytorch
-        version = getattr(tinytorch, '__version__', 'unknown')
-        print(f"✅ TinyTorch {version} ready")
+        # version = getattr(tinytorch, '__version__', 'unknown')
+        print(f'✅ TinyTorch {tinytorch.__version__} ready')
     except ImportError:
         pytest.fail("❌ TinyTorch not available - run installation first")
     

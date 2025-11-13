@@ -41,6 +41,8 @@ Let's measure prediction quality!
 """
 
 # %% [markdown]
+import sys, os
+sys.path.insert(0, os.path.abspath("/Users/jefferyrain/Downloads/TinyTorch"))
 """
 ## 📦 Where This Code Lives in the Final Package
 

@@ -64,7 +64,7 @@ from tinytorch.core.activations import ReLU, Sigmoid  # Module 02 - intelligence
 import numpy as np
 import sys
 import os
-
+sys.path.insert(0, os.path.abspath("/Users/jefferyrain/Downloads/TinyTorch"))
 # Import dependencies from tinytorch package
 from tinytorch.core.tensor import Tensor
 from tinytorch.core.activations import ReLU, Sigmoid
@@ -221,7 +221,7 @@ class Linear:
         # Xavier/Glorot initialization for stable gradients
         scale = np.sqrt(1.0 / in_features)
         weight_data = np.random.randn(in_features, out_features) * scale
-        self.weight = Tensor(weight_data, requires_grad=True)
+        self.weights = Tensor(weight_data, requires_grad=True)
 
         # Initialize bias to zeros or None
         if bias:
@@ -256,7 +256,7 @@ class Linear:
         """
         ### BEGIN SOLUTION
         # Linear transformation: y = xW
-        output = x.matmul(self.weight)
+        output = x.matmul(self.weights)
 
         # Add bias if present
         if self.bias is not None:
@@ -281,7 +281,7 @@ class Linear:
         3. Return as list for optimizer
         """
         ### BEGIN SOLUTION
-        params = [self.weight]
+        params = [self.weights]
         if self.bias is not None:
             params.append(self.bias)
         return params
@@ -310,13 +310,13 @@ def test_unit_linear_layer():
     layer = Linear(784, 256)
     assert layer.in_features == 784
     assert layer.out_features == 256
-    assert layer.weight.shape == (784, 256)
+    assert layer.weights.shape == (784, 256)
     assert layer.bias.shape == (256,)
-    assert layer.weight.requires_grad == True
+    assert layer.weights.requires_grad == True
     assert layer.bias.requires_grad == True
 
     # Test Xavier initialization (weights should be reasonably scaled)
-    weight_std = np.std(layer.weight.data)
+    weight_std = np.std(layer.weights.data)
     expected_std = np.sqrt(1.0 / 784)
     assert 0.5 * expected_std < weight_std < 2.0 * expected_std, f"Weight std {weight_std} not close to Xavier {expected_std}"
 
@@ -337,7 +337,7 @@ def test_unit_linear_layer():
     # Test parameters method
     params = layer.parameters()
     assert len(params) == 2  # Weight and bias
-    assert params[0] is layer.weight
+    assert params[0] is layer.weights
     assert params[1] is layer.bias
 
     print("✅ Linear layer works correctly!")

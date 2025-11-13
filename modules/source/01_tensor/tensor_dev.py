@@ -60,7 +60,8 @@ Let's get started!
 #| export
 
 import numpy as np
-
+import sys, os
+sys.path.insert(0, os.path.abspath("/Users/jefferyrain/Downloads/TinyTorch"))
 # %% [markdown]
 """
 ## 1. Introduction: What is a Tensor?
@@ -257,7 +258,7 @@ class Tensor:
         """
         ### BEGIN SOLUTION
         # Core tensor data - always present
-        self.data = np.array(data, dtype=np.float32)  # Consistent float32 for ML
+        self.data = np.array(data,dtype=np.float32)  # Consistent float32 for ML
         self.shape = self.data.shape
         self.size = self.data.size
         self.dtype = self.data.dtype
@@ -601,7 +602,7 @@ class Tensor:
         >>> total_loss = batch_losses.sum()               # Total: 1.0
         >>> avg_loss = batch_losses.mean()                # Average: 0.25
         >>>
-        >>> # Global average pooling
+        >>> # Global Sum pooling
         >>> feature_maps = Tensor(np.random.rand(32, 256, 7, 7))  # (batch, channels, h, w)
         >>> global_features = feature_maps.sum(axis=(2, 3))       # (batch, channels)
 

@@ -218,17 +218,17 @@ class TestModule04LayersCore:
         🚨 IF FAILS: Layer base class doesn't exist or missing methods
         """
         try:
-            from tinytorch.core.layers import Layer
+            from tinytorch.core.layers import Linear
             
             # Layer class should exist
-            assert hasattr(Layer, 'forward'), \
+            assert hasattr(Linear, 'forward'), \
                 "❌ Layer missing forward() method. All layers need forward(x) -> output"
             
-            assert hasattr(Layer, '__call__'), \
+            assert hasattr(Linear, '__call__'), \
                 "❌ Layer missing __call__() method. Layers should be callable: layer(x)"
             
             # Test instantiation
-            layer = Layer()
+            layer = Linear()
             assert layer is not None, \
                 "❌ Cannot create Layer instance"
             
@@ -286,9 +286,9 @@ class TestModule04LayersCore:
         🎯 DESIGN GOAL: Clean, consistent interface for all layer types
         """
         try:
-            from tinytorch.core.layers import Layer
+            from tinytorch.core.layers import Linear
             
-            layer = Layer()
+            layer = Linear()
             
             # Test that forward raises NotImplementedError (abstract method)
             try:
@@ -348,11 +348,11 @@ class TestModule04LayersCore:
         💡 FOR STUDENTS: This shows how your Dense layer (Module 05) will work
         """
         try:
-            from tinytorch.core.layers import Layer
+            from tinytorch.core.layers import Linear
             from tinytorch.core.tensor import Tensor
             
             # Create a simple custom layer for testing
-            class TestLayer(Layer):
+            class TestLayer(Linear):
                 def __init__(self, multiplier=2):
                     self.multiplier = multiplier
                 
@@ -372,7 +372,7 @@ class TestModule04LayersCore:
                 f"❌ Custom layer broken. Expected {expected}, got {output.data}"
             
             # Test that it's using the Layer interface
-            assert isinstance(test_layer, Layer), \
+            assert isinstance(test_layer, Linear), \
                 "❌ Custom layer should inherit from Layer"
             
         except ImportError:

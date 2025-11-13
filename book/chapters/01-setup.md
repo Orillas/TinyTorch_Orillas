@@ -79,7 +79,7 @@ Ensure you have completed the TinyTorch installation and environment setup:
    source bin/activate-tinytorch.sh
 
 # Verify installation
-tito doctor
+tito system doctor
 ```
 
 ### Development Workflow

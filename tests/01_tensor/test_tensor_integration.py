@@ -39,7 +39,7 @@ class TestTensorFoundation:
         """Test tensor properties work correctly."""
         from tinytorch.core.tensor import Tensor
         
-        data = np.random.randn(3, 4, 5)
+        data = np.random.randn(3, 4, 5).astype(np.float32)
         t = Tensor(data)
         
         assert t.shape == (3, 4, 5)

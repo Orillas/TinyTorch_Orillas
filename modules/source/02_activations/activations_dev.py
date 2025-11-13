@@ -78,10 +78,23 @@ The `import_previous_module()` function below helps us cleanly import components
 
 import numpy as np
 from typing import Optional
-import sys
-import os
-
-
+import sys , os
+sys.path.insert(0, os.path.abspath("/Users/jefferyrain/Downloads/TinyTorch"))
+def import_previous_module(module_name: str, component_name: str):
+    import sys
+    import os
+    '''
+    交互环境中通过这种os.getcwd()来获得当前文件路径
+    '''
+    # sys.path.append(os.path.join(os.getcwd(), '..', module_name))
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', module_name))
+    module = __import__(f"{module_name.split('_')[1]}_dev")
+    return getattr(module, component_name)
+'''
+Tensor= import_previous_module('01_tensor','Tensor')
+a = Tensor([1,2])
+a
+'''
 # Import will be in export cell
 
 # %% [markdown]
@@ -227,9 +240,9 @@ class Sigmoid:
         result = Tensor(result_data)
         
         # Track gradients if autograd is enabled and input requires_grad
-        if SigmoidBackward is not None and x.requires_grad:
-            result.requires_grad = True
-            result._grad_fn = SigmoidBackward(x, result)
+        # if SigmoidBackward is not None and x.requires_grad:
+        #    result.requires_grad = True
+        #    result._grad_fn = SigmoidBackward(x, result)
         
         return result
         ### END SOLUTION

@@ -7,10 +7,10 @@ Focuses on integration, not re-testing individual module functionality.
 
 import pytest
 import numpy as np
-from test_utils import setup_integration_test
+# from test_utils import setup_integration_test
 
 # Ensure proper setup before importing
-setup_integration_test()
+# setup_integration_test()
 
 # Import ONLY from TinyTorch package
 from tinytorch.core.tensor import Tensor

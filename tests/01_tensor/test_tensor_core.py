@@ -37,7 +37,7 @@ class TestTensorCreation:
         try:
             from tinytorch.core.tensor import Tensor
             
-            arr = np.array([[1.0, 2.0], [3.0, 4.0]])
+            arr = np.array([[1.0, 2.0], [3.0, 4.0]]).astype(np.float32)
             t = Tensor(arr)
             
             assert t.shape == (2, 2)

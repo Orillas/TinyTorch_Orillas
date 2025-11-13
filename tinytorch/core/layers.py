@@ -21,7 +21,7 @@ __all__ = ['Linear', 'Dropout']
 import numpy as np
 import sys
 import os
-
+sys.path.insert(0, os.path.abspath("/Users/jefferyrain/Downloads/TinyTorch"))
 # Import dependencies from tinytorch package
 from .tensor import Tensor
 from .activations import ReLU, Sigmoid
@@ -65,7 +65,7 @@ class Linear:
         # Xavier/Glorot initialization for stable gradients
         scale = np.sqrt(1.0 / in_features)
         weight_data = np.random.randn(in_features, out_features) * scale
-        self.weight = Tensor(weight_data, requires_grad=True)
+        self.weights = Tensor(weight_data, requires_grad=True)
 
         # Initialize bias to zeros or None
         if bias:
@@ -100,7 +100,7 @@ class Linear:
         """
         ### BEGIN SOLUTION
         # Linear transformation: y = xW
-        output = x.matmul(self.weight)
+        output = x.matmul(self.weights)
 
         # Add bias if present
         if self.bias is not None:
@@ -125,7 +125,7 @@ class Linear:
         3. Return as list for optimizer
         """
         ### BEGIN SOLUTION
-        params = [self.weight]
+        params = [self.weights]
         if self.bias is not None:
             params.append(self.bias)
         return params
