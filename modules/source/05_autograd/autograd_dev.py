@@ -66,7 +66,7 @@ import numpy as np
 from typing import Optional, List, Tuple
 import sys
 import os
-
+sys.path.insert(0, "/Users/jefferyrain/Downloads/TinyTorch")
 from tinytorch.core.tensor import Tensor
 
 # %% [markdown]
@@ -963,19 +963,18 @@ def enable_autograd():
         This is the key method that makes training possible!
         It implements reverse-mode automatic differentiation.
         
-        **Algorithm:**
+        Algorithm:
         1. Initialize gradient if not provided (for scalar outputs)
         2. Accumulate gradient in self.grad
         3. If this tensor has a _grad_fn, call it to propagate gradients
         4. Recursively call backward() on parent tensors
         
-        **Example:**
-        ```python
-        x = Tensor([2.0], requires_grad=True)
-        y = x * 3
-        y.backward()  # Computes gradients for x
-        print(x.grad)  # [3.0]
-        ```
+        Example:
+        >>> x = Tensor([2.0], requires_grad=True)
+        >>> y = x * 3
+        >>> y.backward()  # Computes gradients for x
+        >>> print(x.grad)  # [3.0]
+        
         """
         # Only compute gradients if required
         if not self.requires_grad:
@@ -984,8 +983,10 @@ def enable_autograd():
         # Initialize gradient if not provided (for scalar outputs)
         if gradient is None:
             if self.data.size == 1:
+                # confirm the final_output is scalar
                 gradient = np.ones_like(self.data)
             else:
+                # 表明需要直接提供最终的gradient
                 raise ValueError("backward() requires gradient for non-scalar outputs")
 
         # Initialize or accumulate gradient
