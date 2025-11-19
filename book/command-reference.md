@@ -538,6 +538,8 @@ Run various test suites.
 **Usage:**
 ```bash
 tito test run [test_type] [options]
+
+tito test 01_tensor # example
 ```
 
 **Examples:**
