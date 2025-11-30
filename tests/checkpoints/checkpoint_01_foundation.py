@@ -5,7 +5,8 @@ Question: "Can I create and manipulate the building blocks of ML?"
 
 import numpy as np
 import pytest
-
+import sys , os
+sys.path.insert(0, "/Users/jefferyrain/Downloads/TinyTorch")
 def test_checkpoint_01_foundation():
     """
     Checkpoint 1: Foundation

@@ -61,9 +61,11 @@ from tinytorch.core.optimizers import SGD, Adam, AdamW
 
 import numpy as np
 from typing import List, Union, Optional, Dict, Any
-
+import sys , os
+sys.path.insert(0, "/Users/jefferyrain/Downloads/TinyTorch")
 # Import Tensor from Module 01 (now with gradient support from Module 05)
 from tinytorch.core.tensor import Tensor
+from tinytorch.core.optimizers import SGD, Adam, AdamW
 
 # %% [markdown]
 """
@@ -474,7 +476,7 @@ class SGD(Optimizer):
                 continue
 
             # Get gradient (param.grad is already a numpy array)
-            grad = param.grad
+            grad = param.grad.data
 
             # Apply weight decay
             if self.weight_decay != 0:

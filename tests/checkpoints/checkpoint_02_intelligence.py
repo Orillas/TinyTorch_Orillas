@@ -5,7 +5,8 @@ Question: "Can I add nonlinearity - the key to neural network intelligence?"
 
 import numpy as np
 import pytest
-
+import sys , os
+sys.path.insert(0, "/Users/jefferyrain/Downloads/TinyTorch")
 def test_checkpoint_02_intelligence():
     """
     Checkpoint 2: Intelligence

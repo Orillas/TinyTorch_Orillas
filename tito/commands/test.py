@@ -766,9 +766,9 @@ class TestCommand(BaseCommand):
             console.print(Panel(f"[red]❌ Please specify a module to test[/red]\n\n"
                               f"Available modules: {', '.join(modules)}\n\n"
                               f"[dim]Examples:[/dim]\n"
-                              f"[dim]  tito module test tensor       - Test specific module[/dim]\n"
-                              f"[dim]  tito module test --all        - Test all modules[/dim]\n"
-                              f"[dim]  tito module test --all --summary - Summary report[/dim]", 
+                              f"[dim]  tito test 01_tensor       - Test specific module[/dim]\n"
+                              f"[dim]  tito test --all        - Test all modules[/dim]\n"
+                              f"[dim]  tito test --all --summary - Summary report[/dim]", 
                               title="Module Required", border_style="red"))
         else:
             console.print(Panel("[red]❌ No modules found in modules/source directory[/red]", 
