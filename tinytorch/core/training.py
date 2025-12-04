@@ -23,9 +23,8 @@ import pickle
 import time
 from typing import Dict, List, Optional, Tuple, Any, Callable
 from pathlib import Path
-import sys
-import os
-
+import sys,os
+sys.path.insert(0,"/Users/jefferyrain/Downloads/TinyTorch")
 # Import dependencies from other modules
 from .tensor import Tensor
 from .layers import Linear
