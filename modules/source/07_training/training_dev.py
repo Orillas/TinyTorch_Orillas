@@ -65,9 +65,8 @@ import pickle
 import time
 from typing import Dict, List, Optional, Tuple, Any, Callable
 from pathlib import Path
-import sys
-import os
-
+import sys,os
+sys.path.insert(0,"/Users/jefferyrain/Downloads/TinyTorch")
 # Import dependencies from other modules
 from tinytorch.core.tensor import Tensor
 from tinytorch.core.layers import Linear
@@ -819,39 +818,19 @@ def test_unit_trainer():
 
 if __name__ == "__main__":
     test_unit_trainer()
-
 # %% [markdown]
-"""
-## 🔧 Part 4: Integration - Bringing Training Together
-
-Now let's create a complete training example that demonstrates how all the components work together. This integration shows the full power of our training infrastructure.
-"""
-
-
-# %% [markdown]
-"""
 ## 🧪 Part 4: Module Integration Test
-
+'''
 Final validation that everything works together correctly.
-"""
-
-
-
-
+```python
 def import_previous_module(module_name: str, component_name: str):
     import sys
     import os
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', module_name))
     module = __import__(f"{module_name.split('_')[1]}_dev")
     return getattr(module, component_name)
-
-# %% [markdown]
-"""
-## 🧪 Part 5: Module Integration Test
-
-Final validation that everything works together correctly.
-"""
-
+```
+'''
 # %% nbgrader={"grade": true, "grade_id": "test_module", "locked": true, "points": 20}
 def test_module():
     """
