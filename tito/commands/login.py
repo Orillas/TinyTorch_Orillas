@@ -1,6 +1,9 @@
 # tito/commands/login.py
 import webbrowser
 import time
+import json
+import urllib.parse
+from pathlib import Path
 from argparse import ArgumentParser, Namespace
 from rich.prompt import Confirm
 from tito.commands.base import BaseCommand
@@ -37,7 +40,39 @@ class LoginCommand(BaseCommand):
         receiver = AuthReceiver()
         try:
             port = receiver.start()
-            target_url = f"{ENDPOINTS['cli_login']}?redirect_port={port}"
+
+            # Construct URL with optional profile pre-fill
+            params = {"redirect_port": str(port)}
+            
+            # Try to read local profile for auto-fill
+            try:
+                # Check project root first, then global home
+                project_profile = Path("profile.json").resolve()
+                global_profile = Path.home() / ".tinytorch" / "profile.json"
+                
+                profile_path = None
+                if project_profile.exists():
+                    profile_path = project_profile
+                elif global_profile.exists():
+                    profile_path = global_profile
+
+                if profile_path:
+                    self.console.print(f"[dim]Reading profile from: {profile_path}[/dim]")
+                    with open(profile_path, 'r') as f:
+                        profile = json.load(f)
+                        self.console.print(f"[dim]Found profile data: {profile.get('email', 'No email')}[/dim]")
+                        if "email" in profile: params["email"] = profile["email"]
+                        if "name" in profile: params["name"] = profile["name"]
+                        if "affiliation" in profile: params["affiliation"] = profile["affiliation"]
+                else:
+                    self.console.print(f"[yellow]No profile found (checked ./profile.json and {global_profile})[/yellow]")
+            except Exception as e:
+                self.console.print(f"[red]Failed to read profile: {e}[/red]")
+
+
+            query_string = urllib.parse.urlencode(params)
+            target_url = f"{ENDPOINTS['cli_login']}?{query_string}"
+
             self.console.print(f"Opening browser to: [cyan]{target_url}[/cyan]")
             self.console.print("Waiting for authentication...")
             webbrowser.open(target_url)

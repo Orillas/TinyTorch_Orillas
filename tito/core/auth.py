@@ -66,10 +66,10 @@ def save_credentials(data: Dict[str, str]) -> None:
     except OSError:
         pass
 
-    # Print file update notification
-    console = get_console()
-    relative_path = p.relative_to(Path.home())
-    console.print(f"[dim]📝 Updated: ~/{relative_path}[/dim]")
+    # File update notification removed for cleaner UX
+    # console = get_console()
+    # relative_path = p.relative_to(Path.home())
+    # console.print(f"[dim]📝 Updated: ~/{relative_path}[/dim]")
 
 def load_credentials() -> Optional[Dict[str, str]]:
     p = _credentials_path()
@@ -213,10 +213,69 @@ class CallbackHandler(http.server.BaseHTTPRequestHandler):
             }
 
             self.send_response(200)
-            self.send_header('Content-type', 'text/html')
+            self.send_header('Content-type', 'text/html; charset=utf-8')
             self.end_headers()
 
-            html_content = "<html><body><h1>🔥 Tinytorch <h1> <h2>Login Successful</h2><p>You can close this window and return to the CLI.</p><p><a href='https://tinytorch.netlify.app/dashboard'>Go to TinyTorch Dashboard</a></p><script>window.close()</script></body></html>"
+            html_content = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>TinyTorch CLI Login</title>
+                <style>
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        margin: 0;
+                        background-color: #f8f9fa;
+                        color: #333;
+                    }
+                    .card {
+                        background: white;
+                        padding: 2rem;
+                        border-radius: 12px;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                        text-align: center;
+                        max-width: 400px;
+                    }
+                    h1 { color: #FF5733; margin-bottom: 0.5rem; }
+                    h2 { margin-top: 0; margin-bottom: 1.5rem; font-weight: 600; }
+                    p { color: #666; line-height: 1.5; margin-bottom: 1.5rem; }
+                    .button {
+                        display: inline-block;
+                        background: #FF5733;
+                        color: white;
+                        text-decoration: none;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        font-weight: 500;
+                        transition: background 0.2s;
+                    }
+                    .button:hover { background: #E64A29; }
+                    .success-icon { font-size: 48px; margin-bottom: 1rem; display: block; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <span class="success-icon">✅</span>
+                    <h1>Tiny🔥Torch</h1>
+                    <h2>Login Successful</h2>
+                    <p>You have successfully authenticated with the CLI. You can now close this window and return to your terminal.</p>
+                    <a href="https://tinytorch.netlify.app/dashboard" class="button">Go to Dashboard</a>
+                </div>
+                <script>
+                    // Optional: Attempt to close window automatically after delay
+                    setTimeout(() => {
+                        // window.close(); // Most browsers block this unless script opened window
+                    }, 3000);
+                </script>
+            </body>
+            </html>
+            """
 
             self.wfile.write(html_content.encode('utf-8'))
             self.wfile.flush()

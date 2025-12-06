@@ -390,6 +390,19 @@ class SetupCommand(BaseCommand):
 
                 if login_result == 0:
                     self.console.print("[green]✅ Successfully connected to the TinyTorch community![/green]")
+
+                    # Post-login profile update prompt
+                    self.console.print()
+                    self.console.print(Panel(
+                        "[bold magenta]✨ Update Community Profile ✨[/bold magenta]\n\n"
+                        "Your CLI is now connected. Would you like to update your profile on the TinyTorch community website?",
+                        title="Community Profile Update",
+                        border_style="magenta",
+                        box=box.ROUNDED
+                    ))
+                    if Confirm.ask("[bold]Update your community profile?[/bold]", default=True):
+                        self.console.print("[dim]Opening profile editor...[/dim]")
+                        webbrowser.open("https://tinytorch.ai/community/?action=profile")
                 else:
                     self.console.print("[yellow]⚠️  Community connection failed or was cancelled. You can try again later with 'tito login'.[/yellow]")
             except Exception as e:
