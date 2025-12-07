@@ -1,5 +1,4 @@
 # tito/commands/login.py
-import webbrowser
 import time
 import json
 import urllib.parse
@@ -8,6 +7,7 @@ from argparse import ArgumentParser, Namespace
 from rich.prompt import Confirm
 from tito.commands.base import BaseCommand
 from tito.core.auth import AuthReceiver, save_credentials, delete_credentials, ENDPOINTS, is_logged_in
+from tito.core.browser import open_url
 
 class LoginCommand(BaseCommand):
     @property
@@ -73,9 +73,10 @@ class LoginCommand(BaseCommand):
             query_string = urllib.parse.urlencode(params)
             target_url = f"{ENDPOINTS['cli_login']}?{query_string}"
 
-            self.console.print(f"Opening browser to: [cyan]{target_url}[/cyan]")
-            self.console.print("Waiting for authentication...")
-            webbrowser.open(target_url)
+            # Use cross-platform browser opener
+            open_url(target_url, self.console, show_manual_fallback=True)
+            self.console.print("\n[dim]Waiting for authentication...[/dim]")
+            
             tokens = receiver.wait_for_tokens()
             if tokens:
                 save_credentials(tokens)
@@ -110,7 +111,7 @@ class LogoutCommand(BaseCommand):
             # Open browser to local logout endpoint
             logout_url = f"http://127.0.0.1:{port}/logout"
             self.console.print(f"Opening browser to complete logout...")
-            webbrowser.open(logout_url)
+            open_url(logout_url, self.console, show_manual_fallback=False)
 
             # Give browser time to redirect and close
             time.sleep(2.0)

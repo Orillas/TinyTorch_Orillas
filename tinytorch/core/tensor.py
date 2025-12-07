@@ -17,7 +17,7 @@
 # %% auto 0
 __all__ = ['BYTES_PER_FLOAT32', 'KB_TO_BYTES', 'MB_TO_BYTES', 'Tensor']
 
-# %% ../../modules/01_tensor/tensor.ipynb 1
+# %% ../../modules/01_tensor/01_tensor.ipynb 1
 import numpy as np
 
 # Constants for memory calculations
@@ -25,7 +25,7 @@ BYTES_PER_FLOAT32 = 4  # Standard float32 size in bytes
 KB_TO_BYTES = 1024  # Kilobytes to bytes conversion
 MB_TO_BYTES = 1024 * 1024  # Megabytes to bytes conversion
 
-# %% ../../modules/01_tensor/tensor.ipynb 7
+# %% ../../modules/01_tensor/01_tensor.ipynb 7
 class Tensor:
     """Educational tensor that grows with student knowledge.
 
@@ -112,9 +112,37 @@ class Tensor:
                     f"Cannot perform matrix multiplication: {self.shape} @ {other.shape}. "
                     f"Inner dimensions must match: {self.shape[-1]} ≠ {other.shape[-2]}"
                 )
-        result_data = np.matmul(self.data, other.data)
+        
+        # Educational implementation: explicit loops to show what matrix multiplication does
+        # This is intentionally slower than np.matmul to demonstrate the value of vectorization
+        # In Module 18 (Acceleration), students will learn to use optimized BLAS operations
+        
+        a = self.data
+        b = other.data
+        
+        # Handle 2D matrices with explicit loops (educational)
+        if len(a.shape) == 2 and len(b.shape) == 2:
+            M, K = a.shape
+            K2, N = b.shape
+            result_data = np.zeros((M, N), dtype=a.dtype)
+            
+            # Explicit nested loops - students can see exactly what's happening!
+            # Each output element is a dot product of a row from A and a column from B
+            for i in range(M):
+                for j in range(N):
+                    # Dot product of row i from A with column j from B
+                    result_data[i, j] = np.dot(a[i, :], b[:, j])
+        else:
+            # For batched operations (3D+), use np.matmul for correctness
+            # Students will understand this once they grasp the 2D case
+            result_data = np.matmul(a, b)
+        
         return Tensor(result_data)
         ### END SOLUTION
+    
+    def __matmul__(self, other):
+        """Enable @ operator for matrix multiplication."""
+        return self.matmul(other)
     
     def __getitem__(self, key):
         """Enable indexing and slicing operations on Tensors."""
@@ -146,8 +174,9 @@ class Tensor:
             new_shape[unknown_idx] = unknown_dim
             new_shape = tuple(new_shape)
         if np.prod(new_shape) != self.size:
+            target_size = int(np.prod(new_shape))
             raise ValueError(
-                f"Cannot reshape tensor of size {self.size} to shape {new_shape}"
+                f"Total elements must match: {self.size} ≠ {target_size}"
             )
         reshaped_data = np.reshape(self.data, new_shape)
         result = Tensor(reshaped_data, requires_grad=self.requires_grad)

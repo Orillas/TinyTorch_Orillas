@@ -13,7 +13,6 @@ import sys
 import os
 import platform
 import datetime
-import webbrowser
 from pathlib import Path
 from argparse import ArgumentParser, Namespace
 from typing import Dict, Any, Optional
@@ -28,6 +27,7 @@ from .base import BaseCommand
 from .login import LoginCommand
 from ..core.console import get_console
 from ..core.auth import is_logged_in
+from ..core.browser import open_url
 
 def _print_file_update(console, file_path: Path) -> None:
     """Print a notification when a file is created or updated."""
@@ -402,7 +402,7 @@ class SetupCommand(BaseCommand):
                     ))
                     if Confirm.ask("[bold]Update your community profile?[/bold]", default=True):
                         self.console.print("[dim]Opening profile editor...[/dim]")
-                        webbrowser.open("https://tinytorch.ai/community/?action=profile")
+                        open_url("https://tinytorch.ai/community/?action=profile", self.console, show_manual_fallback=True)
                 else:
                     self.console.print("[yellow]⚠️  Community connection failed or was cancelled. You can try again later with 'tito login'.[/yellow]")
             except Exception as e:
