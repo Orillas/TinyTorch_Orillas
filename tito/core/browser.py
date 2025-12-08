@@ -46,6 +46,10 @@ def open_url(url: str, console: Optional[Console] = None, show_manual_fallback: 
     elif system == "Darwin":
         browser_opened = _open_url_macos(url)
     
+    # Try Windows-specific approach
+    elif system == "Windows":
+        browser_opened = _open_url_windows(url)
+    
     # Try standard webbrowser module
     if not browser_opened:
         try:
@@ -104,6 +108,27 @@ def _open_url_macos(url: str) -> bool:
             ['open', url],
             capture_output=True,
             timeout=5
+        )
+        return result.returncode == 0
+    except Exception:
+        return False
+
+
+def _open_url_windows(url: str) -> bool:
+    """Try to open URL in Windows default browser (native Windows only, not WSL)."""
+    try:
+        # Method 1: Use os.startfile (Windows-specific, most reliable)
+        import os
+        if hasattr(os, 'startfile'):
+            os.startfile(url)
+            return True
+        
+        # Method 2: Use start command via cmd
+        result = subprocess.run(
+            ['cmd', '/c', 'start', '', url],  # Empty string after 'start' handles URLs with special chars
+            capture_output=True,
+            timeout=10,  # Longer timeout for slower Windows systems
+            shell=False
         )
         return result.returncode == 0
     except Exception:
