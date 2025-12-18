@@ -62,7 +62,8 @@ from tinytorch.core.spatial import Conv2d, MaxPool2d, AvgPool2d
 
 #| export
 import numpy as np
-
+import sys,os
+sys.path.insert(0,"/Users/jefferyrain/Downloads/TinyTorch")
 from tinytorch.core.tensor import Tensor
 
 # %% [markdown]

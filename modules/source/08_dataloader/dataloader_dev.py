@@ -67,7 +67,8 @@ import numpy as np
 import random
 from typing import Iterator, Tuple, List, Optional, Union
 from abc import ABC, abstractmethod
-
+import sys,os
+sys.path.insert(0,"/Users/jefferyrain/Downloads/TinyTorch")
 # Import real Tensor class from tinytorch package
 from tinytorch.core.tensor import Tensor
 
@@ -344,6 +345,76 @@ class TensorDataset(Dataset):
         return tuple(Tensor(tensor.data[idx]) for tensor in self.tensors)
         ### END SOLUTION
 
+# %% 
+class TensorDataset(Dataset):
+    '''
+    Dataset wrapping tensors for supervised learning
+    
+    Each sample is a tuple of tensors from same index across all input tensors
+    all tensors must have the same size in the first dimension
+
+    TODO: Implement TensorDataset for tensor-based data
+
+    APPROACH:
+    1.Store all input tensors
+    2.Validate all tensors have the same first dimension(number of samples)
+    3.Return tuple of tensor slice for each index
+
+    EXAMPLE:
+    >>> features = Tensor([[1, 2], [3, 4], [5, 6]])  # 3 samples, 2 features each
+    >>> labels = Tensor([0, 1, 0])                    # 3 labels
+    >>> dataset = TensorDataset(features, labels)
+    >>> print(len(dataset))  # 3
+    >>> print(dataset[1])    # (Tensor([3, 4]), Tensor(1))
+
+    HINTS:
+    - Use *tensors to accept variable number of tensor arguments
+    - Check all tensors have same length in dimension 0
+    - Return tuple of tensor[idx] for all tensors
+    '''
+    def __init__(self,*tensors):
+        '''
+        Create dataset from multiple tensors.
+
+        Args:
+            *tensor:Variable number of Tensor objects
+
+        All tensors must have the same size in their first dimension.
+        '''
+        ### BEGIN SOLUTION
+        assert len(tensors)>0,'Must provide at least one tensor'
+
+        self.tensors=tensors
+        first_size = len(tensors[0].data)
+        for i,tensor in enumerate(tensors):
+            if len(tensor.data)!=first_size:
+                raise ValueError(
+                    f'All tensors must have the same size in their first dimension \n Tensor 0 :{first_size}, Tensor {i}: {len(tensor.data)}'
+                )
+        ### END SOLUTION
+    
+    def __len__(self) -> int:
+        '''
+        Compute the number of samples in the Dataset
+        '''
+        ### BEGIN SOLUTION
+        return len(self.tensors[0])
+        ### END SOLUTION
+    def __getitem__(self, idx:int) -> Tuple[Tensor,...]:
+        '''
+        Return tuple of tensor slices at given index.
+
+        Args:
+            idx: Sample index
+
+        Returns:
+            Tuple containing tensor[idx] for each input tensor
+        '''
+        ### BEGIN SOLUTION
+        if idx < 0 or idx > len(self):
+            raise IndexError(f'Index {idx} out of range for dataset of size {len(self)}')
+        return tuple(Tensor(tensor.data[idx]) for tensor in self.tensors)
+        ### END SOLUTION
 
 # %% nbgrader={"grade": true, "grade_id": "test-tensordataset", "locked": true, "points": 15}
 def test_unit_tensordataset():
