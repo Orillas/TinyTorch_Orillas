@@ -39,8 +39,8 @@ The hidden layer learns NEW features that make XOR linearly separable!
 Original space (XOR not separable):
     
     1 │ 1    0          Hidden units learn:
-      │                 • h₁: detects "x₁ AND NOT x₂"
-    0 │ 0    1          • h₂: detects "x₂ AND NOT x₁"  
+      │                 • h₁: detects "x₁ AND x₂"
+    0 │ 0    1          • h₂: detects "x₁ OR x₂"  
       └─────            • h₃: detects other patterns
         0    1          • h₄: etc.
 
@@ -176,20 +176,19 @@ def train_network(model, X, y, epochs=500, lr=0.5):
         predictions = model(X)
         loss = loss_fn(predictions, y)
         
-        # Backward pass (through hidden layers!)
-        loss.backward()
-        
-        # Update weights
-        optimizer.step()
-        optimizer.zero_grad()
-        
         # Calculate accuracy
         pred_classes = (predictions.data > 0.5).astype(int)
         accuracy = (pred_classes == y.data).mean()
         
         history["loss"].append(loss.data.item())
         history["accuracy"].append(accuracy)
+
+        # Backward pass (through hidden layers!)
+        loss.backward()
         
+        # Update weights
+        optimizer.step()
+        optimizer.zero_grad()
         # Print progress every 100 epochs
         if (epoch + 1) % 100 == 0:
             console.print(f"Epoch {epoch+1:3d}/{epochs}  Loss: {loss.data:.4f}  Accuracy: {accuracy:.1%}")
@@ -301,16 +300,14 @@ def main():
     # ═══════════════════════════════════════════════════════════════════════
     # ACT 2: THE SETUP 🏗️
     # ═══════════════════════════════════════════════════════════════════════
-    
-    console.print("[bold]🏗️ The Architecture:[/bold]")
-    console.print("""
+    console.print(Panel("""
     ┌───────┐    ┌───────────┐    ┌──────┐    ┌─────────┐    ┌────────┐
     │ Input │    │  Hidden   │    │ ReLU │    │ Output  │    │Sigmoid │
     │  (2)  │───▶│    (4)    │───▶│  Act │───▶│   (1)   │───▶│  ŷ     │
     └───────┘    └───────────┘    └──────┘    └─────────┘    └────────┘
                   ↑ THE KEY!
              Learns non-linear features
-    """)
+    """,title='[bold]🏗️ The Architecture:[/bold]',box=box.DOUBLE,border_style='cyan'))
     
     console.print("[bold]🔧 Components:[/bold]")
     console.print("  • Hidden layer: Transforms data into new space")
@@ -320,7 +317,7 @@ def main():
     
     console.print("\n[bold]⚙️ Hyperparameters:[/bold]")
     console.print("  • Hidden size: 4")
-    console.print("  • Learning rate: 0.5 (aggressive!)")
+    console.print("  • Learning rate: 0.5 ([bold]aggressive![/bold])")
     console.print("  • Epochs: 500")
     console.print("  • Optimizer: SGD with backprop through hidden layer")
     

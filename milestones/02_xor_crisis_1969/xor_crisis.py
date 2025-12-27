@@ -92,8 +92,8 @@ def generate_xor_data(n_samples=100):
     samples_per_case = n_samples // 4
     
     # Case 1: (0,0) → 0
-    x1 = np.random.randn(samples_per_case, 2) * 0.1 + np.array([0.0, 0.0])
-    y1 = np.zeros((samples_per_case, 1))
+    x1 = np.random.randn(samples_per_case, 2) * 0.1 + np.array([0.0, 0.0]) # features
+    y1 = np.zeros((samples_per_case, 1)) # labels
     
     # Case 2: (0,1) → 1  
     x2 = np.random.randn(samples_per_case, 2) * 0.1 + np.array([0.0, 1.0])
@@ -211,7 +211,7 @@ def evaluate_and_explain(model, X, y, history):
     final_acc = history["accuracy"][-1]
     
     # Show results table
-    table = Table(title="\n🎯 The XOR Crisis - Results", show_header=True)
+    table = Table(title="\n[bold red]🎯 The XOR Crisis - Results[/bold red]", show_header=True)
     table.add_column("Metric", style="cyan")
     table.add_column("Initial", style="white")
     table.add_column("Final", style="white")
@@ -246,11 +246,11 @@ def evaluate_and_explain(model, X, y, history):
         ))
     
     # Show XOR truth table vs predictions
-    console.print("\n[bold]XOR Truth Table vs Model Predictions:[/bold]")
+    # console.print("\n  [bold red]XOR Truth Table vs Model Predictions:[/bold red]")
     test_inputs = np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
     test_preds = model(Tensor(test_inputs))
     
-    truth_table = Table(show_header=True)
+    truth_table = Table(title="\n[bold red]XOR Truth Table vs Model Predictions:[/bold red]", show_header=True)
     truth_table.add_column("x₁", style="cyan")
     truth_table.add_column("x₂", style="cyan")
     truth_table.add_column("XOR (True)", style="green")
@@ -259,7 +259,7 @@ def evaluate_and_explain(model, X, y, history):
     
     for i, (x1, x2) in enumerate(test_inputs):
         true_xor = int(x1 != x2)
-        pred = int(test_preds.data[i, 0] > 0.5)
+        pred = int(test_preds.data[i,0] > 0.5)
         correct = "✓" if pred == true_xor else "✗"
         truth_table.add_row(
             f"{int(x1)}", 
@@ -292,7 +292,7 @@ def main():
     # Create single-layer perceptron
     console.print("\n[bold]Step 2:[/bold] Creating single-layer perceptron...")
     model = SingleLayerPerceptron()
-    console.print("  ✓ Architecture: Input(2) → Linear(2→1) → Sigmoid → Output")
+    console.print("  [bold cyan]✓[/bold cyan] [bold]Architecture: Input(2) → Linear(2→1) → Sigmoid → Output[/bold]")
     console.print("  ⚠️  [bold red]No hidden layer - this is the problem![/bold red]")
     
     # Attempt to train (will fail)

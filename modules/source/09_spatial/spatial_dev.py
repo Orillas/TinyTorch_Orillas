@@ -56,10 +56,7 @@ from tinytorch.core.spatial import Conv2d, MaxPool2d, AvgPool2d
 """
 
 # %% nbgrader={"grade": false, "grade_id": "spatial-setup", "solution": true}
-
-
 #| default_exp core.spatial
-
 #| export
 import numpy as np
 import sys,os
@@ -81,12 +78,12 @@ Spatial operations transform machine learning from working with simple vectors t
 
 ```
 Input Image (5×5):        Kernel (3×3):        Output (3×3):
-┌─────────────────┐      ┌─────────┐         ┌─────────┐
-│ 1 2 3 4 5 │      │ 1 0 -1 │         │ ? ? ? │
-│ 6 7 8 9 0 │  *   │ 1 0 -1 │    =    │ ? ? ? │
-│ 1 2 3 4 5 │      │ 1 0 -1 │         │ ? ? ? │
-│ 6 7 8 9 0 │      └─────────┘         └─────────┘
-│ 1 2 3 4 5 │
+┌─────────────────┐       ┌─────────┐           ┌─────────┐
+│ 1 2 3 4 5       │       │ 1 0 -1  │           │ ? ? ?   │
+│ 6 7 8 9 0       │   *   │ 1 0 -1  │    =      │ ? ? ?   │
+│ 1 2 3 4 5       │       │ 1 0 -1  │           │ ? ? ?   │
+│ 6 7 8 9 0       │       └─────────┘           └─────────┘
+│ 1 2 3 4 5       │
 └─────────────────┘
 
 Sliding Window Process:

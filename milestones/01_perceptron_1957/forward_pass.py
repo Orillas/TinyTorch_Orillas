@@ -249,7 +249,6 @@ def main():
         border_style="cyan"
     ))
     console.print()
-    
     # Introduction - What to expect
     intro = (
         "[bold]What You're Demonstrating:[/bold]\n\n"
@@ -342,8 +341,8 @@ def main():
     console.print()
     
     # Extract weights for visualization and display
-    w1 = model.linear.weight.data[0,0]
-    w2 = model.linear.weight.data[1,0]
+    w1 = model.linear.weights.data[0,0]
+    w2 = model.linear.weights.data[1,0]
     b = model.linear.bias.data[0]
     
     # Calculate z values (linear output before sigmoid)

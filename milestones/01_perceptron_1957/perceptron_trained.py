@@ -42,7 +42,7 @@ try:
     _test_linear = Linear(2, 1)
     _test_sigmoid = Sigmoid()
     _test_loss = BinaryCrossEntropyLoss()
-    _test_opt = SGD([_test_linear.weight], lr=0.1)
+    _test_opt = SGD([_test_linear.weights], lr=0.1)
     TRAINING_AVAILABLE = True
 except Exception as e:
     print(f"⚠️  Training modules not available: {e}")
@@ -143,20 +143,20 @@ def train_perceptron(model, X, y, epochs=100, lr=0.1):
         optimizer.zero_grad()
         
         # Calculate accuracy
-        pred_classes = (predictions.data > 0.5).astype(int)
-        accuracy = (pred_classes == y.data).mean()
+        # .flatten() should consider the shape of data
+        pred_classes = (predictions.data > 0.5).astype(int).flatten()
+        accuracy = (pred_classes == y.data.flatten()).mean()
         
         history["loss"].append(loss.data.item())
         history["accuracy"].append(accuracy)
         
         # Print progress every 10 epochs
         if (epoch + 1) % 10 == 0:
-            console.print(f"Epoch {epoch+1:3d}/{epochs}  Loss: {loss.data:.4f}  Accuracy: {accuracy:.1%}")
+            console.print(f"Epoch {epoch+1:3d}/{epochs}  Loss: {loss.data:.4f}  Accuracy: {history['accuracy'][epoch]:.1%}")
     
     console.print("\n[bold green]✅ Training Complete![/bold green]\n")
-    
-    return history
 
+    return history
 
 # ============================================================================
 # 📈 EVALUATION & VISUALIZATION
@@ -169,7 +169,7 @@ def evaluate_model(model, X, y):
     accuracy = (pred_classes == y.data).mean()
     
     # Get model weights
-    weights = model.linear.weight.data
+    weights = model.linear.weights.data
     bias = model.linear.bias.data
     
     return accuracy, weights, bias, predictions
@@ -202,15 +202,13 @@ def main():
     # ═══════════════════════════════════════════════════════════════════════
     # ACT 2: THE SETUP 🏗️
     # ═══════════════════════════════════════════════════════════════════════
-    
-    console.print("[bold]🏗️ The Architecture:[/bold]")
-    console.print("""
+    console.print(Panel("""
     ┌─────────────┐    ┌──────────────┐    ┌──────────┐
     │   Input     │    │   Weights    │    │  Output  │
     │   (x₁, x₂)  │───▶│ w₁·x₁ + w₂·x₂│───▶│    ŷ     │
     │  2 features │    │   + bias     │    │ binary   │
     └─────────────┘    └──────────────┘    └──────────┘
-    """)
+    """,title='[bold]🏗️ The Architecture:[/bold]',border_style='cyan',box=box.DOUBLE))
     
     console.print("[bold]🔧 Components:[/bold]")
     console.print("  • Single layer: Maps 2D input → 1D output")
@@ -239,7 +237,7 @@ def main():
     console.print("\n[bold]🔥 Training in Progress...[/bold]")
     console.print("[dim](Watch gradient descent optimize the weights!)[/dim]\n")
     
-    history = train_perceptron(model, X, y, epochs=100, lr=0.1)
+    history = train_perceptron(model, X, y, epochs=200, lr=0.1)
     
     console.print("\n[green]✅ Training Complete![/green]")
     
