@@ -99,8 +99,8 @@ $$ y_i = \gamma \cdot \hat{x}_i + \beta $$
 在 **Llama、Gemma** 等最新的大模型中，LayerNorm 的一个变体 **RMSNorm** 变得非常流行。
 
 **原理**：RMSNorm 认为，**中心化（减去均值 $\mu$）** 并不重要，重要的是**缩放（除以方差）**。
-$$ \text{RMS}(x) = \sqrt{\frac{1}{H} \sum x_i^2 + \epsilon} $$
-$$ \bar{x}_i = \frac{x_i}{\text{RMS}(x)} \cdot \gamma $$
+$$\text{RMS}(x) = \sqrt{\frac{1}{H} \sum x_i^2 + \epsilon}$$
+$$\bar{x}_i = \frac{x_i}{\text{RMS}(x)} \cdot \gamma$$
 
 **优点**：
 *   少算了一个均值 $\mu$，计算速度更快。
@@ -120,14 +120,14 @@ LayerNorm 的本质是 **“样本内的特征标准化”**。它通过消除�
 
 #### 只有 LayerNorm 之前的世界
 如果每一层权重的尺度（Scale）稍微大于 1（例如初始化不当或更新导致），经过几十层的连续矩阵乘法，输出值 $x_L$ 会呈指数级增长。
-$$ x_L \approx \prod W_l \cdot x_0 $$
+$$x_L\approx \prod W_l\cdot x_0 $$
 这种**激活值幅度的剧烈波动**（Internal Covariate Shift 的一种表现）会导致两个严重后果：
 1.  **落入饱和区**：如果你使用 sigmoid/tanh 等激活函数，巨大的输入值会使激活进入饱和区，梯度趋近于 0（梯度消失）。
 2.  **数值不稳定**：即使是 ReLU，巨大的数值也会导致下一层的权重更新步长变得极不稳定。
 
 #### LayerNorm 的作用
 LayerNorm 强制将每一层的输出分布拉回到 $\mu=0, \sigma=1$。
-$$ \text{LN}(x) = \frac{x - \mu}{\sqrt{\sigma^2}} $$
+$$\text{LN}(x) = \frac{x - \mu}{\sqrt{\sigma^2}}$$
 （忽略 $\gamma, \beta$ 带来的仿射变换，仅看标准化过程）
 
 这意味着，**无论前一层的权重 $W$ 变得多大，经过 LN 后，输出的激活值幅度都被限制在一个固定的范围内。** 这种确定性切断了“数值爆炸”的传播路径，保证了数据在深层网络中流动时，始终保持在激活函数的敏感区间（非饱和区），从而保留了有效的信息传递。
@@ -142,14 +142,14 @@ $$ \text{LN}(x) = \frac{x - \mu}{\sqrt{\sigma^2}} $$
 假设某层的计算为 $y = \text{LN}(W \cdot x)$。
 如果我们把权重 $W$ 放大 $\lambda$ 倍，即 $W' = \lambda W$。
 观察 LN 的计算公式（分子分母同时约去了 $\lambda$）：
-$$ \text{LN}(\lambda W x) = \frac{\lambda W x - \text{Mean}(\lambda W x)}{\sqrt{\text{Var}(\lambda W x)}} = \frac{\lambda (Wx - \mu)}{\lambda \sqrt{\sigma^2}} = \text{LN}(W x) $$
+$$\text{LN}(\lambda W x) = \frac{\lambda W x - \text{Mean}(\lambda W x)}{\sqrt{\text{Var}(\lambda W x)}} = \frac{\lambda (Wx - \mu)}{\lambda \sqrt{\sigma^2}} = \text{LN}(W x)$$
 
 **结论 1：前向传播输出不变。**
 权重的整体缩放不会改变 LayerNorm 的输出。
 
 **结论 2：反向传播梯度反向缩放（关键点）。**
 根据链式法则，如果输出 $y$ 对 $W$ 不变，那么损失函数 $\mathcal{L}$ 对缩放后的权重 $W'$ 的梯度会发生什么变化？
-$$ \frac{\partial \mathcal{L}}{\partial W'} = \frac{\partial \mathcal{L}}{\partial (\lambda W)} = \frac{1}{\lambda} \frac{\partial \mathcal{L}}{\partial W} $$
+$$\frac{\partial \mathcal{L}}{\partial W'} = \frac{\partial \mathcal{L}}{\partial (\lambda W)} = \frac{1}{\lambda} \frac{\partial \mathcal{L}}{\partial W}$$
 
 #### 这意味着什么？
 这引入了一种非常巧妙的**自我调节机制**：
@@ -188,7 +188,7 @@ LayerNorm 隐式地将优化过程约束在一个**超球面**上。这减少了
 
 ### 总结
 1.  **前向稳定性**：将激活值锁定在均值 0 方差 1，防止网络深处的数值爆炸或消失。
-2.  **梯度自调节 (核心机制)**：通过 $ \frac{\partial \mathcal{L}}{\partial (\lambda W)} = \frac{1}{\lambda} \frac{\partial \mathcal{L}}{\partial W} $ 的特性，使得大权重获得小梯度，天然防止参数更新过冲，允许使用更大的全局学习率。
+2.  **梯度自调节 (核心机制)**：通过 $\frac{\partial \mathcal{L}}{\partial (\lambda W)} = \frac{1}{\lambda} \frac{\partial \mathcal{L}}{\partial W}$ 的特性，使得大权重获得小梯度，天然防止参数更新过冲，允许使用更大的全局学习率。
 3.  **优化景观平滑化**：降低了 Loss 曲面的 Lipschitz 常数，让曲面更平滑，使梯度下降路径更直、更可预测。
 
 ### Q3: 数学推导经过 Norm 层的权重 W 的梯度$|\nabla_W L| \propto \frac{1}{\|W \|}$
@@ -214,10 +214,10 @@ LayerNorm 隐式地将优化过程约束在一个**超球面**上。这减少了
 *   **最终 Loss**：$\mathcal{L}$
 
 为了简化推导并聚焦核心原理，我们**忽略**仿射变换参数 $\gamma$ 和 $\beta$（把它们看作常数或合并到下一层），并假设数据已经中心化（$\mu=0$）。此时简化的 LayerNorm 为：
-$$ y = \frac{z}{\sigma} = \frac{Wx}{\sigma(Wx)} $$
+$$y = \frac{z}{\sigma} = \frac{Wx}{\sigma(Wx)}$$
 
 其中标准差 $\sigma$ 是关于 $z$ 的函数：
-$$ \sigma(z) = \sqrt{\frac{1}{H}\sum (z_i - \mu)^2} \approx \sqrt{\text{Var}(z)} $$
+$$\sigma(z) = \sqrt{\frac{1}{H}\sum (z_i - \mu)^2} \approx \sqrt{\text{Var}(z)}$$
 
 ---
 
@@ -226,15 +226,15 @@ $$ \sigma(z) = \sqrt{\frac{1}{H}\sum (z_i - \mu)^2} \approx \sqrt{\text{Var}(z)}
 假设我们将权重矩阵 $W$ 放大 $\lambda$ 倍（$\lambda > 0$），得到新的权重 $W' = \lambda W$。
 
 1.  **新的线性输出**：
-    $$ z' = W'x = (\lambda W)x = \lambda (Wx) = \lambda z $$
+    $$z' = W'x = (\lambda W)x = \lambda (Wx) = \lambda z$$
 2.  **新的标准差**：
     由于标准差计算是线性的（$\sqrt{\text{Var}(\lambda z)} = \lambda \sqrt{\text{Var}(z)}$）：
-    $$ \sigma' = \sigma(z') = \sigma(\lambda z) = \lambda \sigma(z) = \lambda \sigma $$
+    $$\sigma' = \sigma(z') = \sigma(\lambda z) = \lambda \sigma(z) = \lambda \sigma$$
 3.  **新的归一化输出**：
-    $$ y' = \frac{z'}{\sigma'} = \frac{\lambda z}{\lambda \sigma} = \frac{z}{\sigma} = y $$
+    $$y' = \frac{z'}{\sigma'} = \frac{\lambda z}{\lambda \sigma} = \frac{z}{\sigma} = y$$
 
 **结论**：
-$$ \text{LN}(\lambda W \cdot x) = \text{LN}(W \cdot x) $$
+$$\text{LN}(\lambda W \cdot x) = \text{LN}(W \cdot x)$$
 这意味着：**无论你怎么缩放权重 $W$（改变其范数 $\|W\|$），LayerNorm 的输出 $y$ 保持不变，因此 Loss $\mathcal{L}$ 也保持不变。**
 
 ---
@@ -245,7 +245,7 @@ $$ \text{LN}(\lambda W \cdot x) = \text{LN}(W \cdot x) $$
 
 令 $W$ 为原始权重，$\widehat{W} = \lambda W$ 为缩放后的权重。
 根据前向传播结论，我们有：
-$$ \mathcal{L}(\widehat{W}) = \mathcal{L}(\lambda W) = \mathcal{L}(W) $$
+$$\mathcal{L}(\widehat{W}) = \mathcal{L}(\lambda W) = \mathcal{L}(W)$$
 
 现在，我们想知道**缩放后的权重梯度** $\frac{\partial \mathcal{L}}{\partial \widehat{W}}$ 是什么。
 
@@ -258,23 +258,23 @@ $$ \mathcal{L}(\widehat{W}) = \mathcal{L}(\lambda W) = \mathcal{L}(W) $$
 假设 Loss 对输出 $y$ 的梯度为 $\delta_y = \frac{\partial \mathcal{L}}{\partial y}$。由于 $y$ 不变，$\delta_y$ 也不变。
 我们需要求 $\frac{\partial \mathcal{L}}{\partial W}$。
 
-$$ \frac{\partial \mathcal{L}}{\partial W} = \frac{\partial \mathcal{L}}{\partial y} \cdot \frac{\partial y}{\partial z} \cdot \frac{\partial z}{\partial W} $$
-$$ \frac{\partial \mathcal{L}}{\partial W} = \delta_y \cdot \frac{\partial (\frac{z}{\sigma})}{\partial z} \cdot x^T $$
+$$\frac{\partial \mathcal{L}}{\partial W} = \frac{\partial \mathcal{L}}{\partial y} \cdot \frac{\partial y}{\partial z} \cdot \frac{\partial z}{\partial W}$$
+$$\frac{\partial \mathcal{L}}{\partial W} = \delta_y \cdot \frac{\partial (\frac{z}{\sigma})}{\partial z} \cdot x^T$$
 
 关键在于中间项 $\frac{\partial (\frac{z}{\sigma})}{\partial z}$（LayerNorm 的雅可比矩阵）。
 对于 $y = \frac{z}{\sigma}$，根据商的求导法则：
-$$ \frac{\partial y}{\partial z} = \frac{1}{\sigma} I - \frac{z}{\sigma^2} \frac{\partial \sigma}{\partial z} $$
+$$\frac{\partial y}{\partial z} = \frac{1}{\sigma} I - \frac{z}{\sigma^2} \frac{\partial \sigma}{\partial z} $$
 这里只要注意到**分母中包含 $\sigma$**。
 所以原始梯度 $\nabla_W \mathcal{L}$ 的量级大约与 $\frac{1}{\sigma}$ 成正比。
 
 **现在来看缩放后的梯度 $\nabla_{\widehat{W}} \mathcal{L}$：**
-$$ \frac{\partial \mathcal{L}}{\partial \widehat{W}} = \delta_y \cdot \frac{\partial (\frac{z'}{\sigma'})}{\partial z'} \cdot x^T $$
+$$\frac{\partial \mathcal{L}}{\partial \widehat{W}} = \delta_y \cdot \frac{\partial (\frac{z'}{\sigma'})}{\partial z'} \cdot x^T$$
 注意这里的分母变成了 $\sigma'$。我们已知 $\sigma' = \lambda \sigma$。
 所以：
-$$ \frac{\partial (\frac{z'}{\sigma'})}{\partial z'} \approx \frac{1}{\sigma'} (\dots) = \frac{1}{\lambda \sigma} (\dots) = \frac{1}{\lambda} \cdot \left[ \frac{1}{\sigma}(\dots) \right] $$
+$$\frac{\partial (\frac{z'}{\sigma'})}{\partial z'} \approx \frac{1}{\sigma'} (\dots) = \frac{1}{\lambda \sigma} (\dots) = \frac{1}{\lambda} \cdot \left[ \frac{1}{\sigma}(\dots) \right]$$
 
 结合起来，我们可以得出严格的数学关系：
-$$ \nabla_{\widehat{W}} \mathcal{L} = \frac{1}{\lambda} \nabla_{W} \mathcal{L} $$
+$$\nabla_{\widehat{W}} \mathcal{L} = \frac{1}{\lambda} \nabla_{W} \mathcal{L}$$
 
 ---
 
@@ -282,7 +282,7 @@ $$ \nabla_{\widehat{W}} \mathcal{L} = \frac{1}{\lambda} \nabla_{W} \mathcal{L} $
 
 如果我们将缩放因子 $\lambda$ 视为权重的范数（即 $\lambda = \|W\|$），那么上面的公式就变成了：
 
-$$ \nabla_{W} \mathcal{L} \propto \frac{1}{\|W\|} $$
+$$\nabla_{W} \mathcal{L} \propto \frac{1}{\|W\|}$$
 
 这就是所谓的 **“刹车机制”**：
 
