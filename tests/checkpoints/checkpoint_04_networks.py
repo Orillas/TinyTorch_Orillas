@@ -5,7 +5,8 @@ Question: "Can I build complete multi-layer neural networks?"
 
 import numpy as np
 import pytest
-
+import sys , os
+sys.path.insert(0, os.path.abspath("/Users/jefferyrain/Downloads/TinyTorch"))
 def test_checkpoint_04_networks():
     """
     Checkpoint 4: Networks
@@ -19,15 +20,15 @@ def test_checkpoint_04_networks():
     
     try:
         from tinytorch.core.tensor import Tensor
-        from tinytorch.core.layers import Dense
+        from tinytorch.core.layers import Linear
         from tinytorch.core.activations import ReLU, Sigmoid
     except ImportError as e:
         pytest.fail(f"❌ Cannot import required classes - complete Modules 2-5 first: {e}")
     
     # Test 1: Simple 2-layer network
     print("🏗️ Testing 2-layer network construction...")
-    input_layer = Dense(input_size=4, output_size=8)
-    output_layer = Dense(input_size=8, output_size=3)
+    input_layer = Linear(input_size=4, output_size=8)
+    output_layer = Linear(input_size=8, output_size=3)
     activation = ReLU()
     
     # Test network architecture
@@ -43,10 +44,10 @@ def test_checkpoint_04_networks():
     
     # Test 2: Deep network (3+ layers)
     print("🏢 Testing deep network construction...")
-    layer1 = Dense(10, 16)
-    layer2 = Dense(16, 8) 
-    layer3 = Dense(8, 4)
-    layer4 = Dense(4, 1)
+    layer1 = Linear(10, 16)
+    layer2 = Linear(16, 8) 
+    layer3 = Linear(8, 4)
+    layer4 = Linear(4, 1)
     relu = ReLU()
     sigmoid = Sigmoid()
     

@@ -65,7 +65,7 @@ import sys , os
 sys.path.insert(0, "/Users/jefferyrain/Downloads/TinyTorch")
 # Import Tensor from Module 01 (now with gradient support from Module 05)
 from tinytorch.core.tensor import Tensor
-from tinytorch.core.optimizers import SGD, Adam, AdamW
+# from tinytorch.core.optimizers import SGD, Adam, AdamW
 
 # %% [markdown]
 """
@@ -476,7 +476,10 @@ class SGD(Optimizer):
                 continue
 
             # Get gradient (param.grad is already a numpy array)
-            grad = param.grad.data
+            if isinstance(param.grad,Tensor):
+                grad = param.grad.data
+            else:
+                grad = param.grad
 
             # Apply weight decay
             if self.weight_decay != 0:
@@ -490,7 +493,8 @@ class SGD(Optimizer):
 
                 # Update momentum: v = momentum * v_prev + grad
                 self.momentum_buffers[i] = self.momentum * self.momentum_buffers[i] + grad
-                grad = self.momentum_buffers[i]
+                # 显性将memoryview type转换为 np.array数据格式
+                grad = np.asarray(self.momentum_buffers[i])
 
             # Update parameter: param = param - lr * grad
             param.data = param.data - self.lr * grad
@@ -708,7 +712,7 @@ class Adam(Optimizer):
                 continue
 
             # Get gradient (param.grad is already a numpy array)
-            grad = param.grad
+            grad = np.asarray(param.grad.data)
 
             # Apply weight decay
             if self.weight_decay != 0:
@@ -951,7 +955,7 @@ class AdamW(Optimizer):
                 continue
 
             # Get gradient (NOT modified by weight decay) - param.grad is already a numpy array
-            grad = param.grad
+            grad = np.asarray(param.grad.data)
 
             # Initialize buffers if needed
             if self.m_buffers[i] is None:
@@ -1260,10 +1264,10 @@ def test_module():
     print("🔬 Integration Test: Multi-layer Network Optimization...")
 
     # Import components from previous modules using standardized helper
-    Tensor = import_previous_module('01_tensor', 'Tensor')
-    Linear = import_previous_module('03_layers', 'Linear')
-    ReLU = import_previous_module('02_activations', 'ReLU')
-    MSELoss = import_previous_module('04_losses', 'MSELoss')
+    # Tensor = import_previous_module('01_tensor', 'Tensor')
+    # Linear = import_previous_module('03_layers', 'Linear')
+    # ReLU = import_previous_module('02_activations', 'ReLU')
+    # MSELoss = import_previous_module('04_losses', 'MSELoss')
 
     # Create parameters for a 2-layer network
     # Layer 1: 3 inputs -> 4 hidden
